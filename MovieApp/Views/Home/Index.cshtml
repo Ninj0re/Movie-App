@@ -1,0 +1,176 @@
+﻿@model List<MovieApp.Models.Movies>
+
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Movie List</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <style>
+            body {
+                background-color: #121212;
+                color: white;
+                overflow-x: hidden;
+            }
+
+            .scroll-wrapper {
+                position: relative;
+                width: 100%;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                padding: 20px 0;
+                background: #1c1c1c;
+                border-radius: 10px;
+                box-shadow: 0 4px 10px rgba(255, 255, 255, 0.1);
+            }
+
+            .scroll-container {
+                display: flex;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                white-space: nowrap;
+                padding: 20px;
+                scroll-behavior: smooth;
+            }
+
+                .scroll-container::-webkit-scrollbar {
+                    height: 8px;
+                }
+
+                .scroll-container::-webkit-scrollbar-track {
+                    background: #444;
+                    border-radius: 10px;
+                }
+
+                .scroll-container::-webkit-scrollbar-thumb {
+                    background: #ff5733;
+                    border-radius: 10px;
+                }
+
+                    .scroll-container::-webkit-scrollbar-thumb:hover {
+                        background: #c70039;
+                    }
+
+            .movie-card {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 250px;
+                scroll-snap-align: start;
+                margin: 0 10px;
+                background: #222;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+                transition: transform 0.3s ease-in-out;
+            }
+
+                .movie-card:hover {
+                    transform: scale(1.05);
+                }
+
+                .movie-card img {
+                    width: 100%;
+                    height: 350px;
+                    object-fit: cover;
+                }
+
+                .movie-card .card-title {
+                    font-size: 1.3rem;
+                    font-weight: bold;
+                    color: #fff;
+                    text-transform: uppercase;
+                }
+
+                .movie-card .card-text {
+                    font-size: 1rem;
+                    color: #ddd;
+                }
+
+            .btn-movie-details {
+                display: block;
+                text-align: center;
+                font-size: 1rem;
+                font-weight: bold;
+                text-transform: uppercase;
+                background: linear-gradient(90deg, #ff5733, #c70039);
+                border: none;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                transition: background 0.3s ease-in-out;
+            }
+
+                .btn-movie-details:hover {
+                    background: linear-gradient(90deg, #c70039, #900c3f);
+                }
+        </style>
+    </head>
+    <body>
+        <div class="container mt-4">
+            <h1 class="mb-4 text-center">Now Playing</h1>
+            <div class="container position-relative">
+                <div class="scroll-wrapper">
+                    <div class="scroll-container">
+                        @foreach (var movie in Model.Where(m => !m.ComingSoon))
+                    {
+                        <div class="card movie-card">
+                            <img src="@movie.ImageUrl" class="card-img-top" alt="Movie Image">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <p class="card-text">Directed by: @movie.Director</p>
+                                <a href="/MovieInfo/Index?id=@movie.MovieID" class="btn btn-movie-details">View Details</a>
+                            </div>
+                        </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <h1 class="mb-4 text-center">Coming Soon</h1>
+            <div class="container position-relative">
+                <div class="scroll-wrapper">
+                    <div class="scroll-container">
+                        @foreach (var movie in Model.Where(m => m.ComingSoon))
+                    {
+                        <div class="card movie-card">
+                            <img src="@movie.ImageUrl" class="card-img-top" alt="Movie Image">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <p class="card-text">Directed by: @movie.Director</p>
+                                <a href="/MovieInfo/Index?id=@movie.MovieID" class="btn btn-movie-details">View Details</a>
+                            </div>
+                        </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container mt-5">
+            <h1 class="mb-4 text-center">Top Rated</h1>
+            <div class="container position-relative">
+                <div class="scroll-wrapper">
+                    <div class="scroll-container">
+                        @foreach (var movie in Model.OrderByDescending(m => m.IMDBRating).Take(5))
+                    {
+                        <div class="card movie-card">
+                            <img src="@movie.ImageUrl" class="card-img-top" alt="Movie Image">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">@movie.Title</h5>
+                                <p class="card-text">Directed by: @movie.Director</p>
+                                <p class="card-text">IMDB: @movie.IMDBRating</p>
+                                <a href="/MovieInfo/Index?id=@movie.MovieID" class="btn btn-movie-details">View Details</a>
+                            </div>
+                        </div>
+                    }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

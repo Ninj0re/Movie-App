@@ -1,0 +1,113 @@
+﻿@{
+    ViewData["Title"] = "MovieApp";
+    string firstName = Context.Session.GetString("FirstName") ?? "";
+    string lastName = Context.Session.GetString("LastName") ?? "";
+    bool isLoggedIn = !string.IsNullOrEmpty(firstName) && !string.IsNullOrEmpty(lastName);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/style.css" />
+    <style>
+        .nav-item .nav-link {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+
+                <a id="logoLink" class="navbar-brand" href="/">MovieApp</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a id="homeLink" class="nav-link" href="/">Home</a>
+                        </li>
+                    </ul>
+                    <ul class="navbar-nav">
+                        @if (isLoggedIn)
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="#" onclick="logout(event)">Logout (@firstName @lastName)</a>
+                        </li>
+                        }
+                        else
+                        {
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/Login/Index">Login</a>
+                        </li>
+                        <li class="nav-item ms-3">
+                            <a class="nav-link text-light" href="/Register/Index">Register</a>
+                        </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="footer bg-dark text-white text-center py-3 mt-4">
+        <div class="container">
+            &copy; 2025 - MovieApp
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function logout(event) {
+            event.preventDefault();
+
+            fetch('/Login/Logout', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = "/";
+                    } else {
+                        console.error('Logout failed');
+                    }
+                })
+                .catch(error => console.error('Logout error:', error));
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let currentUrl = window.location.href;
+            let homeLink = document.getElementById("homeLink");
+            let logoLink = document.getElementById("logoLink");
+
+            let firstName = "@firstName";
+            let lastName = "@lastName";
+
+            if (firstName && lastName) {
+                let userHomeUrl = `/Home/UserHome?firstname=${firstName}&lastname=${lastName}`;
+
+                if (currentUrl.includes("/Home/UserHome") || currentUrl.includes("/MovieInfo/UserHome") || currentUrl.includes("/Cart/UserHome")) {
+                    homeLink.href = userHomeUrl;
+                    logoLink.href = userHomeUrl;
+                }
+            }
+        });
+    </script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
